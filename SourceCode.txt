@@ -1,0 +1,47 @@
+import sys, win32clipboard, time, zipfile, os, urllib, requests, shutil, jpath
+from urllib2 import Request
+from urllib2 import urlopen
+from tqdm import tqdm
+dst = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Team Fortress 2\\tf"
+
+#When I wrote this, only God and I knew what I was writing
+#Now only God knows
+
+raw_input("Please copy the .ss link and hit enter... ")
+win32clipboard.OpenClipboard()
+page = win32clipboard.GetClipboardData()
+win32clipboard.CloseClipboard()
+print page[-6:]
+data = "http://sizzlingstv.s3.amazonaws.com/stv/"+ page[-6:] +".zip"
+filename = page[-6:] + ".zip"
+
+try:
+    urllib.urlretrieve (data, filename)
+except:
+    print("No zip file was found, ending program...")
+    os.remove(filename)
+    time.sleep(5)
+
+for i in tqdm(range(100)):
+    time.sleep(0.01)
+try:
+    zip_ref = zipfile.ZipFile(filename, 'r')
+    zip_ref.extractall()
+    zip_ref.close()
+    os.remove(filename)
+    for file in os.listdir(os.getcwd()):
+        if file.endswith(".dem"):
+            try:
+                file2 = raw_input("Please enter what you want the demo to be named: ")
+                file3 = file2 + ".dem"
+                os.rename(file, file3)
+                print file
+                shutil.move(file3, dst)
+                print filename + " From " + data + " has been downloaded and extracted."
+                time.sleep(5)
+            except:
+                print "Error... dem file already in TF folder?"
+except Exception, e:
+    print e
+    os.remove(filename)
+    time.sleep(5)
